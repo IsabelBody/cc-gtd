@@ -2,13 +2,16 @@
 
 A comprehensive Getting Things Done (GTD) implementation with claude code powered task processing and daily planning features.
 
+**New here? Run `/onboard`.** It guides the first setup, brain dump, project map, daily
+plan, and next habits. [ONBOARDING.md](ONBOARDING.md) is the written reference.
+
 ## Overview
 
 This system implements David Allen's GTD methodology with modern AI enhancements for:
 - Smart task capture and processing
 - Automated project organization
 - Daily planning and work logging
-- Integration with external tools (Todoist, Calendar)
+- Integration with external tools through MCP (Todoist, Google Calendar)
 
 ## Features
 
@@ -47,11 +50,15 @@ gtd/
 
 ## Commands
 
-- `\capture [item]` - Smart capture with auto-processing
-- `\daily` - Plan for the day
-- `\todoist` - Sync with Todoist
-- `\calendar` - Sync with Calendar
-- `\weekly` - Conduct weekly review
+- `/capture [item]` - Smart capture with auto-processing
+- `/daily` - Plan for the day
+- `/todoist` - Sync with Todoist through the Todoist MCP server
+- `/calendar` - Pull Google Calendar context through the Google Calendar MCP server
+- `/weekly` - Conduct weekly review
+- `/onboard` - Guided first-run setup and GTD onboarding
+- `/restart` - Restart the day from current context
+- `/shutdown` - End-of-day reconciliation
+- `/journal` - Capture a journal entry
 
 ## Context System
 
@@ -89,12 +96,8 @@ Daily files (`daily/YYYY-MM-DD.md`) include:
 2. **Just** - Command runner for project automation
    - Install: `cargo install just`
    - Documentation: [https://github.com/casey/just](https://github.com/casey/just)
-3. **Tod** - For syncing with Todoist
-   - Install: `cargo install tod`
-   - Documentation: [https://github.com/alanvardy/tod](https://github.com/alanvardy/tod)
-4. **icalBuddy** - For calendar integration
-   - macOS: `brew install ical-buddy`
-   - Documentation: [https://github.com/ali-rantakari/icalBuddy](https://github.com/ali-rantakari/icalBuddy)
+3. **Todoist MCP server** - Configured in `.mcp.json`
+4. **Google Calendar MCP server** - Required for `/calendar`, `/daily`, and `/weekly`
 
 ### Installation Steps
 
@@ -109,21 +112,29 @@ Daily files (`daily/YYYY-MM-DD.md`) include:
    just setup
    ```
 
-3. Configure Tod (if using):
-   ```bash
-   tod configure
+3. In Claude Code, run:
+   ```text
+   /onboard
    ```
 
-4. Set up Claude Code with the CLAUDE.md instructions (\init)
+4. Confirm the MCP servers are connected in Claude Code, if using integrations:
+   - Todoist: `.mcp.json` points to `https://ai.todoist.net/mcp`
+   - Google Calendar: connect the calendar MCP server for `/calendar`
 
-5. Start capturing tasks with `\capture`!
+5. Start capturing tasks with `/capture`!
 
 ### Additional Commands
 
 The `justfile` includes helpful commands:
-- `just setup` - Creates directory structure and initializes files
-- `just add-project` - Creates a new project with info.md and tasks.md
-- `just add-task` - Adds a task to Todoist with project and context
+- `just setup` - Creates private local files from templates without overwriting existing data
+- `just onboard` - Prints the first-run command sequence
+- `just add-project project-name` - Creates a new project with info.md and tasks.md
+
+## Privacy
+
+The repo is designed to share commands, skills, and templates while keeping personal data
+local. The default `.gitignore` excludes daily logs, journals, active projects, identity,
+calendar mirror, inbox, waiting-for, someday/maybe, `todo.md`, and local MCP config.
 
 ## Smart Processing Logic
 
@@ -155,8 +166,8 @@ The system supports energy-based planning:
 ## Integration
 
 Designed to work with:
-- Todoist for mobile capture
-- Calendar apps for time-specific items
+- Todoist MCP for task sync and mobile capture
+- Google Calendar MCP for schedule context and time blocking
 - AI assistants for processing automation
 
 ## License
